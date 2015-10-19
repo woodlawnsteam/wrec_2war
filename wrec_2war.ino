@@ -23,6 +23,7 @@
 int mode = modeStartup;
 
 unsigned long startTime;
+
 unsigned long ledStartTime;
 int ledCount = 0;
 int ledStatus = HIGH;
@@ -72,7 +73,7 @@ void loop() {
 // startup mode
 int doStartupMode() {
 
-  if (!ledSignal(3,1000)) }
+  if (!ledSignal(3,500,500)) }
     if (checkObstacleSensor(OS_LEFT_LEFT)) {
       mode = modeSelection;
     } else {
@@ -82,20 +83,37 @@ int doStartupMode() {
   
 }
 
-int ledSignal(int count, int duration) {
+int ledSetup() {
 
-  int nowTime = millis();
-  if (nowTime - startTime) > duration {
-    if (ledStatus == HIGH) {
-       ledStatus = LOW;
-    } else {
-       ledStatus = HIGH;
-    }
-    ledCount++;
-  };
-  if (ledCount > count) {
+}
+
+int ledOn() {
+
+}
+
+int ledOff() {
+
+}
+
+int ledSet(int value) {
+
+}
+
+int ledSignal(int count, unsigned long onDuration, unsigned long offDuration ) {
+  int nowTime;
+
+  if (ledCount < count) {
+    nowTime = millis();
+    if (ledStatus && ((nowTime - ledStartTime) > onDuration)) {
+      ledSet(LOW);
+      ledStartTime = nowTime;
+    } else if (!ledStatus && ((nowTime - ledStartTime) > offDuration)) {
+      ledSet(LOW);
+      ledStartTime = nowTime;
+      ledCount++;
+    };
     return false;
-  };
+  };  
   return true;
 }
 
