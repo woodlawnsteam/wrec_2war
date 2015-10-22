@@ -24,7 +24,7 @@
 #define ENCODER_RIGHT           2
 #define ENCODER_LEFT            3
 
-#define abs(X) ((X < 0) ? -1 * X : X)
+//#define abs(X) ((X < 0) ? -1 * X : X)
 
 // obstacle sensors
 #define OS_LEFT_LEFT            4
@@ -54,8 +54,8 @@ int ledCount = 0;
 int ledStatus = 0;
 
 // encoder variables
-int encoderRightCount = 0;
-int encoderLeftCount = 0;
+volatile int encoderRightCount = 0;
+volatile int encoderLeftCount = 0;
 
 // motor variables
 int leftPower = 0;
@@ -262,16 +262,26 @@ int goStop() {
 
 // encoder functions
 int encoderSetup() {
-  attachInterrupt (0, encoderRightCounter, CHANGE);
-  attachInterrupt (1, encoderLeftCounter, CHANGE);
+  attachInterrupt (digitalPinToInterrupt(2), encoderRightCounter, CHANGE);
+  attachInterrupt (digitalPinToInterrupt(3), encoderLeftCounter, CHANGE);
+
+  pinMode (2, INPUT);
+  digitalWrite(2, HIGH);
+  pinMode (3, INPUT);
+  digitalWrite(3, HIGH);
+
 }
 
 void encoderRightCounter () {
+  noInterrupts();
   encoderRightCount++;
+  interrupts();
 }
 
 void encoderLeftCounter () {
+  noInterrupts();
   encoderLeftCount++;
+  interrupts();
 }
 
 // OA IR functions
